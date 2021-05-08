@@ -1,31 +1,60 @@
 pipeline{
 	agent any
 	tools {
-	    nodejs "NodeJS"
+		nodejs "NodeJS"
 	}
-  	stages {
-      		stage('Test') {
-          		steps {
-              			echo 'Testing'
-              			sh 'npm install'
-              			sh 'npm run test1'
-          		}
-      		}
-  	}
-	post{
-
-		always{
-			echo 'Finished'
-		}
+	stages {
+		stage('Build') {
+			steps {
+				echo 'Building'
+				sh 'npm install'
+				sh 'npm run build'
+			}
+			post{
+				always{
+					echo 'Finished'
+				}
 				failure{
 					echo 'Failure'
 					emailext attachLog: true,
-          				body: "${currentBuild.currentResult}: Job ${env.JOB_NAME} build ${env.BUILD_NUMBER}",
+					body: "${currentBuild.currentResult}: Job ${env.JOB_NAME} build ${env.BUILD_NUMBER}",
+					to: 'szymonn45@gmail.com',
+					subject: "Build failed"
+				}
+				success{
+					echo 'Success'
+					emailext attachLog: true,
+					body: "${currentBuild.currentResult}: Job ${env.JOB_NAME} build ${env.BUILD_NUMBER}",
+					to: 'szymonn45@gmail.com',
+					subject: "Build success"
+				}
+			}
+		}
+
+		stage('Test') {
+			steps {
+				echo 'Testing'
+				sh 'npm run test'
+			}
+			post{
+				always{
+					echo 'Finished'
+				}
+				failure{
+					echo 'Failure'
+					emailext attachLog: true,
+					body: "${currentBuild.currentResult}: Job ${env.JOB_NAME} build ${env.BUILD_NUMBER}",
 					to: 'szymonn45@gmail.com',
 					subject: "Test failed"
-		}
-		success{
-      			echo 'Success'
+				}
+				success{
+					echo 'Success'
+					emailext attachLog: true,
+					body: "${currentBuild.currentResult}: Job ${env.JOB_NAME} build ${env.BUILD_NUMBER}",
+					to: 'szymonn45@gmail.com',
+					subject: "Test success"
+				}
+			}
 		}
 	}
 }
