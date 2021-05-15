@@ -59,7 +59,7 @@ pipeline{
 		stage('Deploy') {
 			steps {
 				echo 'Deploy'
-				sh 'docker build -t deploy -f Dockerfile_socketio_build .'
+				sh 'docker build -t deploy -f Dockerfile_socketio_deploy .'
 			}
 			post{
 				always{
